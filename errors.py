@@ -4,44 +4,31 @@ import cmath
 class Error:
     def __init__(
             self,
-            exact,
-            method,
-            type
+            method
     ):
-        self.exact=exact
         self.method=method
-        self.type=type
 
-    def func(self, x, y):
-        return cmath.sqrt(y-x)/cmath.sqrt(x)+1
 
-    def get_local(self, type, y, x, h):
-        if self.type == 'Euler':
-            return y+h*self.func(x, y)
-        elif self.type == 'Improved Euler':
-            return y + h*self.func(x+h/2, y+h*self.func(x, y)/2)
-        else:
-            k1 = self.func(x, y)
-            k2 = self.func(x + h / 2, y + h * k1 / 2)
-            k3 = self.func(x + h / 2, y + h * k2 / 2)
-            k4 = self.func(x + h, y + h * k3)
-            return y + h * (k1 + 2 * k2 + 2 * k3 + k4) / 6
+    def Calculate(self, x, X, h):
+        #LTE
+        lte = list()
+        lte.append(0)
+        sz = int((X - x + 1) // h)
+        for i in range(sz-1):
+            lc = self.method.func(x, self.method.y(x), h)
+            lte.append(abs(lc - self.method.y(x + h)).real)
+            x += h
 
-    def LTE(self, x0, X, h):
-        arr=list()
-        arr.append(0)
-        for i in range(1, len(self.exact)):
-            lc=self.get_local(self.type, self.exact[i-1], x0, h)
-            x0+=h
-            arr.append(abs(lc-self.exact[i]).real)
-        return arr
+        #GTE
+        gte = list()
+        gte.append(0)
+        x = self.method.x0
+        y = self.method.y0
+        for i in range(sz-1):
+            gte.append(abs(self.method.func(x, y, h) - self.method.y(x + h)))
+            y = self.method.func(x, y, h).real
+            x += h
 
-    def GTE(self):
-        arr=list()
-        for i in range(len(self.exact)):
-            arr.append(abs(self.method[i]-self.exact[i]))
-        return arr
+        return [lte, gte]
 
-    def total(self, x0, X, h):
-        arr = self.LTE(x0, X, h)
-        return sum(arr)
+

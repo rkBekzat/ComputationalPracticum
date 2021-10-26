@@ -9,8 +9,7 @@ class equation:
             y0,
             X,
             h,
-            y,
-            color
+            y
     ):
         self.name=name
         self.y0=y0
@@ -18,10 +17,10 @@ class equation:
         self.X=X
         self.h=h
         self.y=y
-        self.color=color
 
     def y_prime(self, x, y):
         return cmath.sqrt(y-x)/cmath.sqrt(x)+1
 
-    def Solve(self):
+    def func(self, x, y, h):
         return
+
