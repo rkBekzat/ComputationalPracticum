@@ -6,11 +6,9 @@ class Euler(equation):
             self,
             x0,
             y0,
-            X,
             h,
-            y,
     ):
-        super(Euler, self).__init__("Euler", x0, y0, X, h, y)
+        super(Euler, self).__init__(x0, y0, h)
 
     def func(self, x, y, h):
         return y+h*self.y_prime(x, y)

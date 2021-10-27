@@ -5,11 +5,9 @@ class  RungeKutta(equation):
             self,
             x0,
             y0,
-            X,
             h,
-            y,
     ):
-        super(RungeKutta, self).__init__("Runge Kutta", x0, y0, X, h, y)
+        super(RungeKutta, self).__init__(x0, y0,  h)
 
     def func(self, x, y, h):
         k1 = self.y_prime(x, y)

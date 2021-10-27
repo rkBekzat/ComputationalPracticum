@@ -2,6 +2,7 @@ import cmath
 
 from matplotlib import pyplot as plt
 
+from Exact import exactSolution
 from errors import Error
 import numpy as np
 
@@ -15,10 +16,8 @@ graphs_name=["Exact and numerical solution", "Local truncation error", "Global t
 names=["Euler method", "Improved Euler Method", "Runge Kutta"]
 
 
-def y(x):
-    return 2*(2*cmath.sqrt(x)+x+2)
 
-def Solve(x, method):
+def build(x, method):
     arr=list()
     y=method.y0
     h=method.h
@@ -29,8 +28,8 @@ def Solve(x, method):
     arr.pop()
     return arr
 
-def plotting(tittle, ylabel, xlabel, x, func, names):
-    plt.title(tittle)
+def plotting(title, ylabel, xlabel, x, func, names):
+    plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     for i in range(3):
@@ -45,26 +44,28 @@ class MainWindow:
         self.X=X
         self.N=N
         self.x=np.linspace(x0, X, N)
+        self.exact_y=exactSolution(x0, y0)
+        self.c=self.exact_y.choose()
         self.h=(X-x0+1)/N
-        self.exact=[y(i) for i in self.x]
-        self.methods = [Euler(x0, y0, X, self.h, y), ImprovedEuler(x0, y0, X, self.h, y), RungeKutta(x0, y0, X, self.h, y)]
+        self.exact=[self.exact_y.exact_func(i, self.c) for i in self.x]
+        self.methods = [Euler(x0, y0, self.h), ImprovedEuler(x0, y0, self.h), RungeKutta(x0, y0, self.h)]
         self.graphs=list()
 
     def calc_total(self):
         total = [list(), list(), list()]
         for i in range(2, self.N+1):
-            print("i: ")
+            # print("i: ")
             x=np.linspace(self.x0, self.X, i)
             h=(self.X-self.x0+1)/i
             for j in range(3):
-                print(Error(self.methods[j]).Calculate(self.x0, self.X, h)[1])
-                total[j].append(max(Error(self.methods[j]).Calculate(self.x0, self.X, h)[1]))
+                # print(Error(self.methods[j], self.exact_y, self.c).Calculate(self.x0, self.X, h)[1])
+                total[j].append(max(Error(self.methods[j], self.exact_y, self.c).Calculate(self.x0, self.X, h, i)[1]))
         return total
 
     def build_graph(self):
-        self.graphs.append([Solve(self.x, self.methods[i]) for i in range(3)])
-        self.graphs.append([Error(self.methods[i]).Calculate(self.x0, self.X, self.h)[0] for i in range(3)])
-        self.graphs.append([Error(self.methods[i]).Calculate(self.x0, self.X, self.h)[1] for i in range(3)])
+        self.graphs.append([build(self.x, self.methods[i]) for i in range(3)])
+        self.graphs.append([Error(self.methods[i], self.exact_y, self.c).Calculate(self.x0, self.X, self.h, self.N)[0] for i in range(3)])
+        self.graphs.append([Error(self.methods[i], self.exact_y, self.c).Calculate(self.x0, self.X, self.h, self.N)[1] for i in range(3)])
         self.graphs.append(self.calc_total())
 
     def show_graphs(self):

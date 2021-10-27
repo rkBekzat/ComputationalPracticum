@@ -2,6 +2,8 @@ from gui import MainWindow
 
 def Enter_data():
     x0=int(input("enter the initial x0:"))
+    while x0 <= 0:
+        x0=int(input(("Change x0:")))
     y0=int(input("enter the initial y0:"))
     X=int(input("enter the finish point X:"))
     N=int(input("enter the number of points N:"))
