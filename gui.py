@@ -54,12 +54,11 @@ class MainWindow:
     def calc_total(self):
         total = [list(), list(), list()]
         for i in range(2, self.N+1):
-            # print("i: ")
             x=np.linspace(self.x0, self.X, i)
             h=(self.X-self.x0+1)/i
             for j in range(3):
-                # print(Error(self.methods[j], self.exact_y, self.c).Calculate(self.x0, self.X, h)[1])
                 total[j].append(max(Error(self.methods[j], self.exact_y, self.c).Calculate(self.x0, self.X, h, i)[1]))
+        #print(total)
         return total
 
     def build_graph(self):
